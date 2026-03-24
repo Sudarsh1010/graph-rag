@@ -1,0 +1,16 @@
+[phases.setup]
+
+nixPkgs = ["go", "postgresql"]
+
+[phases.build]
+
+cmd = "go build -ldflags '-s -w' -o ./bin/app ./cmd/app"
+
+[start]
+
+cmd = "./bin/app"
+
+[variables]
+
+CGO_ENABLED = "0"
+GOOS = "linux"

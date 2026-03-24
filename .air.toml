@@ -1,0 +1,86 @@
+# .air.toml - Air configuration for hot-reload development
+# https://github.com/cosmtrek/air
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Command to build your application
+cmd = "go build -o ./tmp/main ./cmd/app"
+
+# Binary name
+bin = "tmp/main"
+
+# Customize binary run command
+full_bin = "APP_ENV=dev ./tmp/main"
+
+# Watch these filename extensions
+include_ext = ["go", "tpl", "tmpl", "html", "toml", "yaml", "yml", "json", "sql"]
+
+# Ignore these filename extensions or directories
+exclude_dir = ["tmp", "vendor", "node_modules", "bin", "data"]
+
+# Watch these directories
+include_dir = ["cmd", "internal", "pkg", "api"]
+
+# Exclude files
+exclude_file = []
+
+# Exclude specific regular expressions
+exclude_regex = ["_test\\.go$", "_gen\\.go$"]
+
+# Exclude unchanged files
+exclude_unchanged = true
+
+# Follow symlinks
+follow_symlink = true
+
+# This log file places in your tmp_dir
+log = "tmp/air.log"
+
+# Poll files for changes instead of using fsnotify (useful for Docker on some platforms)
+poll = false
+poll_interval = 500
+
+# It's not necessary to trigger build each time file changes
+delay = 1000
+
+# Stop running old binary when build errors occur
+stop_on_error = true
+
+# Send Interrupt signal before killing process (windows does not support this)
+send_interrupt = true
+
+# Delay after sending Interrupt signal
+kill_delay = 500
+
+# Add additional arguments when running binary
+args = []
+
+# Add additional arguments when building binary
+build_args = []
+
+# Add additional environment variables when running binary
+env = []
+
+[log]
+# Show log time
+time = true
+
+# Only show main log (silences watcher, build, runner)
+main_only = false
+
+[color]
+# Customize each part's color. If no color found, use the raw app log.
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+# Delete tmp directory on exit
+clean_on_exit = true
+
+[screen]
+# Keep scroll position
+clear_on_rebuild = true

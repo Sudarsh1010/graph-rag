@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: graph-rag-postgres
+    environment:
+      POSTGRES_USER: graphrag
+      POSTGRES_PASSWORD: graphrag_dev_password
+      POSTGRES_DB: graphrag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graphrag -d graphrag"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: golang:1.25-alpine
+    container_name: graph-rag-app
+    working_dir: /app
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USERNAME: graphrag
+      POSTGRES_PASSWORD: graphrag_dev_password
+      POSTGRES_DB: graphrag
+      POSTGRES_SSLMODE: disable
+      LOG_LEVEL: debug
+      LOG_FORMAT: console
+      ENV: development
+      PORT: "8080"
+      # Air configuration
+      AIR_SKIP_COMMENTS: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - go_mod_cache:/go/pkg/mod
+    command: >
+      sh -c "
+        apk add --no-cache git &&
+        go install github.com/cosmtrek/air@latest &&
+        air -c .air.toml
+      "
+
+volumes:
+  postgres_data:
+  go_mod_cache:
