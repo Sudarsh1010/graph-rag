@@ -6,6 +6,7 @@ require (
 	github.com/caarlos0/env/v11 v11.4.0
 	github.com/jackc/pgx/v5 v5.9.1
 	github.com/joho/godotenv v1.5.1
+	github.com/shopspring/decimal v1.4.0
 	github.com/uptrace/bun v1.2.18
 	github.com/uptrace/bun/dialect/pgdialect v1.2.18
 	go.uber.org/fx v1.24.0
