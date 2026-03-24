@@ -29,6 +29,9 @@ type Config struct {
 
 	Env  string `env:"ENV" envDefault:"development"`
 	Port string `env:"PORT" envDefault:"8080"`
+
+	DatasetPath    string `env:"DATASET_PATH" envDefault:"./sap-order-to-cash-dataset"`
+	EmbeddingsPath string `env:"EMBEDDINGS_PATH" envDefault:"./data/embeddings"`
 }
 
 func NewConfig() (*Config, error) {

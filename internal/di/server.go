@@ -3,30 +3,30 @@ package di
 import (
 	"context"
 	"fmt"
-	go_http "net/http"
+	"net/http"
 
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
 type Server struct {
-	server *go_http.Server
+	server *http.Server
 	logger *zap.Logger
 }
 
 type ServerParams struct {
 	fx.In
 
-	Config *Config
-	Logger *zap.Logger
-	// Router    *chi.Mux
+	Config    *Config
+	Logger    *zap.Logger
+	Router    http.Handler
 	Lifecycle fx.Lifecycle
 }
 
 func NewServer(p ServerParams) (*Server, error) {
-	srv := &go_http.Server{
-		Addr: fmt.Sprintf(":%s", p.Config.Port),
-		// Handler: p.Router,
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", p.Config.Port),
+		Handler: p.Router,
 	}
 
 	server := &Server{
@@ -35,12 +35,17 @@ func NewServer(p ServerParams) (*Server, error) {
 	}
 
 	p.Lifecycle.Append(fx.Hook{
-		OnStart: func(_ context.Context) error {
+		OnStart: func(ctx context.Context) error {
 			p.Logger.Info(
 				"Starting HTTP server",
 				zap.String("port", p.Config.Port),
 				zap.String("env", p.Config.Env),
 			)
+			go func() {
+				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					p.Logger.Error("HTTP server error", zap.Error(err))
+				}
+			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
@@ -54,7 +59,7 @@ func NewServer(p ServerParams) (*Server, error) {
 
 func (s *Server) Start() error {
 	err := s.server.ListenAndServe()
-	if err != nil && err != go_http.ErrServerClosed {
+	if err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("server failed: %w", err)
 	}
 	return nil

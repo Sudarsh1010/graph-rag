@@ -22,26 +22,8 @@ func main() {
 		// Core modules
 		di.Module,
 
-		// Lifecycle hooks
-		fx.Invoke(func(
-			lifecycle fx.Lifecycle,
-			server *di.Server,
-			logger *zap.Logger,
-		) {
-			lifecycle.Append(fx.Hook{
-				OnStart: func(_ context.Context) error {
-					go func() {
-						if err := server.Start(); err != nil {
-							logger.Error("server failed", zap.Error(err))
-						}
-					}()
-					return nil
-				},
-				OnStop: func(ctx context.Context) error {
-					return server.Stop(ctx)
-				},
-			})
-		}),
+		// Ensure Server is constructed (triggers Router + NLQueryService chain)
+		fx.Invoke(func(*di.Server) {}),
 	)
 
 	if err := app.Start(context.Background()); err != nil {
