@@ -2,65 +2,59 @@ package di
 
 import (
 	"context"
+	"embed"
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
+	"io/fs"
 
+	"github.com/uptrace/bun/migrate"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
-// RunMigrations executes all pending database migrations.
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
+
+// RunMigrations executes all pending UP database migrations.
 func RunMigrations(lc fx.Lifecycle, db *Database, logger *zap.Logger) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger.Info("Running database migrations...")
 
-			// Get migrations directory path
-			migrationsDir := "internal/infrastructure/persistence/bun/migrations"
-
-			// Read migration files
-			entries, err := os.ReadDir(migrationsDir)
+			// Get the migrations subdirectory from embedded FS
+			subFS, err := fs.Sub(migrationsFS, "migrations")
 			if err != nil {
-				logger.Warn(
-					"Migrations directory not found, skipping migrations",
-					zap.String("path", migrationsDir), zap.Error(err),
-				)
-				return nil
+				return err
 			}
 
-			// Execute each migration file
-			for _, entry := range entries {
-				if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".sql") {
-					continue
-				}
-
-				filePath := filepath.Join(migrationsDir, entry.Name())
-				content, err := os.ReadFile(filePath)
-				if err != nil {
-					return fmt.Errorf(
-						"failed to read migration file %s: %w",
-						entry.Name(),
-						err,
-					)
-				}
-
-				logger.Info(
-					"Executing migration",
-					zap.String("file", entry.Name()),
-				)
-
-				_, err = db.ExecContext(ctx, string(content))
-				if err != nil {
-					return fmt.Errorf(
-						"failed to execute migration %s: %w",
-						entry.Name(), err,
-					)
-				}
+			// Discover embedded SQL migrations
+			migrations := migrate.NewMigrations()
+			if err := migrations.Discover(subFS); err != nil {
+				return err
 			}
 
-			logger.Info("Database migrations completed successfully")
+			// Create migrator with custom table name
+			migrator := migrate.NewMigrator(db.DB, migrations,
+				migrate.WithTableName("migrations"),
+			)
+
+			// Create migrations tracking table
+			if err := migrator.Init(ctx); err != nil {
+				return err
+			}
+
+			// Run UP migrations only
+			group, err := migrator.Migrate(ctx)
+			if err != nil {
+				return err
+			}
+
+			if group.ID == 0 {
+				logger.Info("No new migrations to apply")
+			} else {
+				logger.Info("Migrations completed successfully",
+					zap.String("group", fmt.Sprintf("%d", group.ID)))
+			}
+
 			return nil
 		},
 	})
