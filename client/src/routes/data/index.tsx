@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
+import { Badge } from "~/components/ui/badge"
 import { apiFetch } from "~/lib/api-client"
 import { Skeleton } from "~/components/ui/skeleton"
 
@@ -174,7 +175,7 @@ function DataTable({
           <TableRow key={i}>
             {columns.map((col) => (
               <TableCell key={col.key} className="px-4 py-3">
-                <CellValue value={row[col.key]} />
+                <CellValue value={row[col.key]} columnKey={col.key} />
               </TableCell>
             ))}
           </TableRow>
@@ -184,9 +185,38 @@ function DataTable({
   )
 }
 
-function CellValue({ value }: { value: unknown }) {
+function CellValue({ value, columnKey }: { value: unknown; columnKey?: string }) {
   if (value == null) return <span className="text-muted-foreground">—</span>
   if (typeof value === "object") return <span>{JSON.stringify(value)}</span>
+
+  const strValue = String(value).toUpperCase()
+
+  const isStatusColumn =
+    columnKey === "overall_delivery_status" ||
+    columnKey === "overall_goods_movement_status" ||
+    columnKey === "overall_picking_status"
+
+  if (isStatusColumn) {
+    if (
+      strValue === "COMPLETED" ||
+      strValue === "SUCCESS" ||
+      strValue === "C"
+    ) {
+      return <Badge variant="default">{String(value)}</Badge>
+    }
+    if (
+      strValue === "PENDING" ||
+      strValue === "PROCESSING" ||
+      strValue === "A" ||
+      strValue === "B"
+    ) {
+      return <Badge variant="secondary">{String(value)}</Badge>
+    }
+    if (strValue === "FAILED" || strValue === "ERROR") {
+      return <Badge variant="destructive">{String(value)}</Badge>
+    }
+  }
+
   return <span>{String(value)}</span>
 }
 

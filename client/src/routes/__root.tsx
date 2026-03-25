@@ -1,4 +1,4 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router"
+import { Link, Outlet, createRootRoute, useMatchRoute } from "@tanstack/react-router"
 import {
   HouseIcon,
   DatabaseIcon,
@@ -33,7 +33,10 @@ const navItems = [
 ]
 
 export const Route = createRootRoute({
-  component: () => (
+  component: () => {
+    const matchRoute = useMatchRoute()
+    
+    return (
     <TooltipProvider>
       <SidebarProvider>
         <Sidebar collapsible="icon">
@@ -42,6 +45,7 @@ export const Route = createRootRoute({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   size="lg"
+                  isActive={!!matchRoute({ to: "/" })}
                   render={<Link to="/" />}
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -59,17 +63,22 @@ export const Route = createRootRoute({
               <SidebarGroupLabel>Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {navItems.map((item) => (
-                    <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton
-                        tooltip={item.label}
-                        render={<Link to={item.to} />}
-                      >
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  {navItems.map((item) => {
+                    const isActive = !!matchRoute({ to: item.to })
+                    
+                    return (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton
+                          tooltip={item.label}
+                          isActive={isActive}
+                          render={<Link to={item.to} />}
+                        >
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -95,5 +104,6 @@ export const Route = createRootRoute({
         </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>
-  ),
+  )
+  },
 })
