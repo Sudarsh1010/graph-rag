@@ -1,8 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
-import { ChatCircleIcon, PaperPlaneTiltIcon, SpinnerGapIcon } from "@phosphor-icons/react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card"
+import {
+  ChatCircleIcon,
+  PaperPlaneTiltIcon,
+  SpinnerGapIcon,
+} from "@phosphor-icons/react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { ScrollArea } from "~/components/ui/scroll-area"
@@ -10,23 +20,23 @@ import { apiFetch } from "~/lib/api-client"
 
 interface NLQueryResponse {
   answer: string
-  data?: Record<string, unknown>[]
+  data?: Array<Record<string, unknown>>
   visualization?: Record<string, unknown>
-  sources?: string[]
+  sources?: Array<string>
 }
 
 interface Message {
   id: string
   role: "user" | "assistant"
   content: string
-  data?: Record<string, unknown>[]
+  data?: Array<Record<string, unknown>>
   visualization?: Record<string, unknown>
-  sources?: string[]
+  sources?: Array<string>
 }
 
 function Ask() {
   const [input, setInput] = useState("")
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Array<Message>>([])
   const scrollRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -110,7 +120,8 @@ function Ask() {
             Chat
           </CardTitle>
           <CardDescription>
-            Type your question below. Press Enter to send, Shift+Enter for newline.
+            Type your question below. Press Enter to send, Shift+Enter for
+            newline.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 flex-col p-0">
@@ -120,7 +131,9 @@ function Ask() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <ChatCircleIcon className="size-12 text-muted-foreground" />
-                  <div className="mt-4 text-lg font-medium">Start a conversation</div>
+                  <div className="mt-4 text-lg font-medium">
+                    Start a conversation
+                  </div>
                   <div className="mt-1 text-sm text-muted-foreground">
                     Ask questions like "Show me the top 5 sales orders"
                   </div>
@@ -169,7 +182,9 @@ function Ask() {
                                         className="max-w-[200px] truncate px-3 py-2"
                                       >
                                         {value == null ? (
-                                          <span className="text-muted-foreground">—</span>
+                                          <span className="text-muted-foreground">
+                                            —
+                                          </span>
                                         ) : typeof value === "object" ? (
                                           <span className="text-xs text-muted-foreground">
                                             {JSON.stringify(value)}

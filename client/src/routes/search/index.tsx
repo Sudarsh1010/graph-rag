@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { MagnifyingGlassIcon } from "@phosphor-icons/react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
@@ -15,9 +21,10 @@ function Search() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["search", submittedQuery],
     queryFn: () =>
-      apiFetch<{ query: string; results: Record<string, Record<string, unknown>[]> }>(
-        `/api/v1/search/?query=${encodeURIComponent(submittedQuery)}`,
-      ),
+      apiFetch<{
+        query: string
+        results: Record<string, Array<Record<string, unknown>>>
+      }>(`/api/v1/search/?query=${encodeURIComponent(submittedQuery)}`),
     enabled: submittedQuery.length > 0,
   })
 
@@ -31,7 +38,9 @@ function Search() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Search</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
+          Search
+        </h1>
         <p className="text-muted-foreground">
           Find products, orders, customers, and more across all entity types.
         </p>
@@ -43,7 +52,9 @@ function Search() {
             <MagnifyingGlassIcon className="size-5 text-primary" />
             Search
           </CardTitle>
-          <CardDescription>Search across all SAP data entities by keyword.</CardDescription>
+          <CardDescription>
+            Search across all SAP data entities by keyword.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex gap-2">
@@ -89,7 +100,7 @@ function Search() {
           {resultGroups.map(([entityType, results]) => (
             <Card key={entityType}>
               <CardHeader>
-                <CardTitle className="capitalize text-base">
+                <CardTitle className="text-base capitalize">
                   {entityType.replace(/-/g, " ")}
                 </CardTitle>
                 <CardDescription>{results.length} result(s)</CardDescription>
@@ -103,7 +114,10 @@ function Search() {
                           Object.keys(results[0])
                             .slice(0, 6)
                             .map((key) => (
-                              <th key={key} className="px-3 py-2 text-left font-medium capitalize">
+                              <th
+                                key={key}
+                                className="px-3 py-2 text-left font-medium capitalize"
+                              >
                                 {key.replace(/_/g, " ")}
                               </th>
                             ))}
@@ -115,9 +129,14 @@ function Search() {
                           {Object.entries(row)
                             .slice(0, 6)
                             .map(([key, value]) => (
-                              <td key={key} className="max-w-[200px] truncate px-3 py-2">
+                              <td
+                                key={key}
+                                className="max-w-[200px] truncate px-3 py-2"
+                              >
                                 {value == null ? (
-                                  <span className="text-muted-foreground">—</span>
+                                  <span className="text-muted-foreground">
+                                    —
+                                  </span>
                                 ) : typeof value === "object" ? (
                                   <span className="text-xs text-muted-foreground">
                                     {JSON.stringify(value)}

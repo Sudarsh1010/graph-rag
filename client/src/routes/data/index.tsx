@@ -2,17 +2,23 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import {
-  ShoppingCartIcon,
-  PackageIcon,
-  UsersIcon,
-  TruckIcon,
-  FileTextIcon,
   CreditCardIcon,
+  FileTextIcon,
+  PackageIcon,
+  ShoppingCartIcon,
+  TruckIcon,
+  UsersIcon,
 } from "@phosphor-icons/react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card"
+import type { PaginatedResponse } from "~/lib/api-types"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { apiFetch } from "~/lib/api-client"
-import type { PaginatedResponse } from "~/lib/api-types"
 
 type EntityType =
   | "sales-orders"
@@ -23,11 +29,19 @@ type EntityType =
   | "payments"
 
 const entityTypes = [
-  { id: "sales-orders" as EntityType, name: "Sales Orders", icon: ShoppingCartIcon },
+  {
+    id: "sales-orders" as EntityType,
+    name: "Sales Orders",
+    icon: ShoppingCartIcon,
+  },
   { id: "products" as EntityType, name: "Products", icon: PackageIcon },
   { id: "customers" as EntityType, name: "Customers", icon: UsersIcon },
   { id: "deliveries" as EntityType, name: "Deliveries", icon: TruckIcon },
-  { id: "billing-documents" as EntityType, name: "Billing Documents", icon: FileTextIcon },
+  {
+    id: "billing-documents" as EntityType,
+    name: "Billing Documents",
+    icon: FileTextIcon,
+  },
   { id: "payments" as EntityType, name: "Payments", icon: CreditCardIcon },
 ]
 
@@ -36,13 +50,18 @@ function DataExplorer() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["data", activeEntity],
-    queryFn: () => apiFetch<PaginatedResponse<Record<string, unknown>>>(`/api/v1/${activeEntity}`),
+    queryFn: () =>
+      apiFetch<PaginatedResponse<Record<string, unknown>>>(
+        `/api/v1/${activeEntity}`
+      ),
   })
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Data Explorer</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
+          Data Explorer
+        </h1>
         <p className="text-muted-foreground">
           Browse SAP order-to-cash data across different entity types.
         </p>
@@ -104,7 +123,13 @@ function DataExplorer() {
   )
 }
 
-function DataTable({ data, activeEntity }: { data: Record<string, unknown>[]; activeEntity: EntityType }) {
+function DataTable({
+  data,
+  activeEntity,
+}: {
+  data: Array<Record<string, unknown>>
+  activeEntity: EntityType
+}) {
   const columns = getColumns(activeEntity)
 
   return (
@@ -113,10 +138,7 @@ function DataTable({ data, activeEntity }: { data: Record<string, unknown>[]; ac
         <thead>
           <tr className="border-b">
             {columns.map((col) => (
-              <th
-                key={col.key}
-                className="px-4 py-3 text-left font-medium"
-              >
+              <th key={col.key} className="px-4 py-3 text-left font-medium">
                 {col.label}
               </th>
             ))}
@@ -124,7 +146,10 @@ function DataTable({ data, activeEntity }: { data: Record<string, unknown>[]; ac
         </thead>
         <tbody>
           {data.map((row, i) => (
-            <tr key={i} className="border-b transition-colors hover:bg-muted/50">
+            <tr
+              key={i}
+              className="border-b transition-colors hover:bg-muted/50"
+            >
               {columns.map((col) => (
                 <td key={col.key} className="px-4 py-3">
                   <CellValue value={row[col.key]} />
@@ -149,7 +174,7 @@ interface ColumnDef {
   label: string
 }
 
-function getColumns(entity: EntityType): ColumnDef[] {
+function getColumns(entity: EntityType): Array<ColumnDef> {
   switch (entity) {
     case "sales-orders":
       return [

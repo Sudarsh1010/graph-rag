@@ -212,7 +212,7 @@ export interface JournalEntry {
 }
 
 export interface PaginatedResponse<T> {
-  data: T[]
+  data: Array<T>
   total: number
   page: number
   limit: number
@@ -220,5 +220,5 @@ export interface PaginatedResponse<T> {
 
 export interface SearchResponse {
   query: string
-  results: Record<string, Record<string, unknown>[]>
+  results: Record<string, Array<Record<string, unknown>>>
 }

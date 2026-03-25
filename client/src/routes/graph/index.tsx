@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { GraphIcon } from "@phosphor-icons/react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { Label } from "~/components/ui/label"
@@ -29,12 +35,12 @@ const EXAMPLE_QUERIES = [
 
 function GraphView() {
   const [cypher, setCypher] = useState("")
-  const [result, setResult] = useState<{ data: unknown[] } | null>(null)
+  const [result, setResult] = useState<{ data: Array<unknown> } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const mutation = useMutation({
     mutationFn: (query: string) =>
-      apiFetch<{ data: unknown[] }>("/api/v1/graph/query", {
+      apiFetch<{ data: Array<unknown> }>("/api/v1/graph/query", {
         method: "POST",
         body: JSON.stringify({ cypher: query }),
       }),
@@ -57,7 +63,9 @@ function GraphView() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Graph Explorer</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight">
+          Graph Explorer
+        </h1>
         <p className="text-muted-foreground">
           Query the SAP data graph using Apache AGE Cypher queries.
         </p>
@@ -70,7 +78,8 @@ function GraphView() {
             Cypher Query
           </CardTitle>
           <CardDescription>
-            Execute read-only Cypher queries against the SAP order-to-cash graph.
+            Execute read-only Cypher queries against the SAP order-to-cash
+            graph.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,7 +96,10 @@ function GraphView() {
               <div className="text-xs text-muted-foreground">
                 {cypher.length} characters
               </div>
-              <Button type="submit" disabled={!cypher.trim() || mutation.isPending}>
+              <Button
+                type="submit"
+                disabled={!cypher.trim() || mutation.isPending}
+              >
                 <GraphIcon className="size-4" />
                 {mutation.isPending ? "Executing..." : "Run Query"}
               </Button>
@@ -129,7 +141,9 @@ function GraphView() {
           <CardHeader>
             <CardTitle className="text-base">Results</CardTitle>
             <CardDescription>
-              {Array.isArray(result.data) ? `${result.data.length} row(s) returned` : "No data"}
+              {Array.isArray(result.data)
+                ? `${result.data.length} row(s) returned`
+                : "No data"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -138,8 +152,13 @@ function GraphView() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      {Object.keys(result.data[0] as Record<string, unknown>).map((key) => (
-                        <th key={key} className="px-3 py-2 text-left font-medium">
+                      {Object.keys(
+                        result.data[0] as Record<string, unknown>
+                      ).map((key) => (
+                        <th
+                          key={key}
+                          className="px-3 py-2 text-left font-medium"
+                        >
                           {key}
                         </th>
                       ))}
@@ -148,17 +167,22 @@ function GraphView() {
                   <tbody>
                     {result.data.slice(0, 50).map((row, i) => (
                       <tr key={i} className="border-b">
-                        {Object.entries(row as Record<string, unknown>).map(([key, value]) => (
-                          <td key={key} className="max-w-[300px] truncate px-3 py-2">
-                            {typeof value === "object" ? (
-                              <span className="font-mono text-xs">
-                                {JSON.stringify(value)}
-                              </span>
-                            ) : (
-                              <span>{String(value ?? "—")}</span>
-                            )}
-                          </td>
-                        ))}
+                        {Object.entries(row as Record<string, unknown>).map(
+                          ([key, value]) => (
+                            <td
+                              key={key}
+                              className="max-w-[300px] truncate px-3 py-2"
+                            >
+                              {typeof value === "object" ? (
+                                <span className="font-mono text-xs">
+                                  {JSON.stringify(value)}
+                                </span>
+                              ) : (
+                                <span>{String(value ?? "—")}</span>
+                              )}
+                            </td>
+                          )
+                        )}
                       </tr>
                     ))}
                   </tbody>
