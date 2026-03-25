@@ -1,7 +1,11 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: jolly-eagle-postgres
     container_name: graph-rag-postgres
+    dns:
+      - 1.0.0.1
+    entrypoint: docker-entrypoint.sh
+    command: ["postgres", "-c", "session_preload_libraries=age"]
     environment:
       POSTGRES_USER: graphrag
       POSTGRES_PASSWORD: graphrag_dev_password
@@ -20,6 +24,8 @@ services:
     image: golang:1.25-alpine
     container_name: graph-rag-app
     working_dir: /app
+    dns:
+      - 1.0.0.1
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
@@ -44,7 +50,7 @@ services:
     command: >
       sh -c "
         apk add --no-cache git &&
-        go install github.com/cosmtrek/air@latest &&
+        go install github.com/air-verse/air@latest &&
         air -c .air.toml
       "
 

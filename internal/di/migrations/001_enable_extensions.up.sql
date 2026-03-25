@@ -6,4 +6,5 @@
 -- 3. Application must connect as superuser to run CREATE EXTENSION
 
 CREATE EXTENSION IF NOT EXISTS vector;
+LOAD 'age';
 CREATE EXTENSION IF NOT EXISTS age;
