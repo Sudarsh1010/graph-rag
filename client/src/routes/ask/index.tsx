@@ -16,6 +16,14 @@ import {
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
 
 interface NLQueryResponse {
@@ -160,26 +168,23 @@ function Ask() {
                             View data ({message.data.length} rows)
                           </summary>
                           <div className="mt-2 overflow-x-auto rounded border">
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="border-b bg-muted/50">
+                            <Table>
+                              <TableHeader>
+                                <TableRow className="bg-muted/50">
                                   {Object.keys(message.data[0]).map((key) => (
-                                    <th
-                                      key={key}
-                                      className="px-3 py-2 text-left font-medium"
-                                    >
+                                    <TableHead key={key}>
                                       {key}
-                                    </th>
+                                    </TableHead>
                                   ))}
-                                </tr>
-                              </thead>
-                              <tbody>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
                                 {message.data.slice(0, 20).map((row, i) => (
-                                  <tr key={i} className="border-b">
+                                  <TableRow key={i}>
                                     {Object.entries(row).map(([key, value]) => (
-                                      <td
+                                      <TableCell
                                         key={key}
-                                        className="max-w-[200px] truncate px-3 py-2"
+                                        className="max-w-[200px] truncate"
                                       >
                                         {value == null ? (
                                           <span className="text-muted-foreground">
@@ -192,12 +197,12 @@ function Ask() {
                                         ) : (
                                           <span>{String(value)}</span>
                                         )}
-                                      </td>
+                                      </TableCell>
                                     ))}
-                                  </tr>
+                                  </TableRow>
                                 ))}
-                              </tbody>
-                            </table>
+                              </TableBody>
+                            </Table>
                           </div>
                         </details>
                       </div>

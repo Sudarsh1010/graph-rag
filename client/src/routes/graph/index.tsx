@@ -12,6 +12,14 @@ import {
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { Label } from "~/components/ui/label"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
 
 const EXAMPLE_QUERIES = [
@@ -149,29 +157,26 @@ function GraphView() {
           <CardContent>
             {Array.isArray(result.data) && result.data.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
                       {Object.keys(
                         result.data[0] as Record<string, unknown>
                       ).map((key) => (
-                        <th
-                          key={key}
-                          className="px-3 py-2 text-left font-medium"
-                        >
+                        <TableHead key={key}>
                           {key}
-                        </th>
+                        </TableHead>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {result.data.slice(0, 50).map((row, i) => (
-                      <tr key={i} className="border-b">
+                      <TableRow key={i}>
                         {Object.entries(row as Record<string, unknown>).map(
                           ([key, value]) => (
-                            <td
+                            <TableCell
                               key={key}
-                              className="max-w-[300px] truncate px-3 py-2"
+                              className="max-w-[300px] truncate"
                             >
                               {typeof value === "object" ? (
                                 <span className="font-mono text-xs">
@@ -180,13 +185,13 @@ function GraphView() {
                               ) : (
                                 <span>{String(value ?? "—")}</span>
                               )}
-                            </td>
+                            </TableCell>
                           )
                         )}
-                      </tr>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             ) : (
               <div className="py-8 text-center text-muted-foreground">

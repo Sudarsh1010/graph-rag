@@ -18,6 +18,14 @@ import {
   CardTitle,
 } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
 
 type EntityType =
@@ -133,33 +141,28 @@ function DataTable({
   const columns = getColumns(activeEntity)
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b">
-            {columns.map((col) => (
-              <th key={col.key} className="px-4 py-3 text-left font-medium">
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              className="border-b transition-colors hover:bg-muted/50"
-            >
-              {columns.map((col) => (
-                <td key={col.key} className="px-4 py-3">
-                  <CellValue value={row[col.key]} />
-                </td>
-              ))}
-            </tr>
+    <Table className="text-sm">
+      <TableHeader>
+        <TableRow>
+          {columns.map((col) => (
+            <TableHead key={col.key} className="px-4 py-3">
+              {col.label}
+            </TableHead>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((row, i) => (
+          <TableRow key={i}>
+            {columns.map((col) => (
+              <TableCell key={col.key} className="px-4 py-3">
+                <CellValue value={row[col.key]} />
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 

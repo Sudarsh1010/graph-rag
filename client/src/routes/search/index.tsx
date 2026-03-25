@@ -12,6 +12,14 @@ import {
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
 
 function Search() {
@@ -107,31 +115,28 @@ function Search() {
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
                         {results.length > 0 &&
                           Object.keys(results[0])
                             .slice(0, 6)
                             .map((key) => (
-                              <th
-                                key={key}
-                                className="px-3 py-2 text-left font-medium capitalize"
-                              >
+                              <TableHead key={key}>
                                 {key.replace(/_/g, " ")}
-                              </th>
+                              </TableHead>
                             ))}
-                      </tr>
-                    </thead>
-                    <tbody>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {results.slice(0, 20).map((row, i) => (
-                        <tr key={i} className="border-b">
+                        <TableRow key={i}>
                           {Object.entries(row)
                             .slice(0, 6)
                             .map(([key, value]) => (
-                              <td
+                              <TableCell
                                 key={key}
-                                className="max-w-[200px] truncate px-3 py-2"
+                                className="max-w-[200px] truncate"
                               >
                                 {value == null ? (
                                   <span className="text-muted-foreground">
@@ -144,12 +149,12 @@ function Search() {
                                 ) : (
                                   <span>{String(value)}</span>
                                 )}
-                              </td>
+                              </TableCell>
                             ))}
-                        </tr>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
