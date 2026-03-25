@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
+import { Skeleton } from "~/components/ui/skeleton"
 
 type EntityType =
   | "sales-orders"
@@ -75,20 +76,16 @@ function DataExplorer() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {entityTypes.map((entity) => (
-          <Button
-            key={entity.id}
-            variant={activeEntity === entity.id ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveEntity(entity.id)}
-            className="gap-2"
-          >
-            <entity.icon className="size-4" />
-            {entity.name}
-          </Button>
-        ))}
-      </div>
+      <Tabs value={activeEntity} onValueChange={(v) => setActiveEntity(v as EntityType)}>
+        <TabsList>
+          {entityTypes.map((entity) => (
+            <TabsTrigger key={entity.id} value={entity.id}>
+              <entity.icon className="size-4" />
+              {entity.name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <Card>
         <CardHeader>
@@ -108,8 +105,29 @@ function DataExplorer() {
         </CardHeader>
         <CardContent>
           {isLoading && (
-            <div className="flex items-center justify-center py-8 text-muted-foreground">
-              Loading...
+            <div className="space-y-2">
+              <Table className="text-sm">
+                <TableHeader>
+                  <TableRow>
+                    {getColumns(activeEntity).map((col) => (
+                      <TableHead key={col.key} className="px-4 py-3">
+                        <Skeleton className="h-4 w-20" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {getColumns(activeEntity).map((col) => (
+                        <TableCell key={col.key} className="px-4 py-3">
+                          <Skeleton className="h-4 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
           {error && (

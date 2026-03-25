@@ -4,7 +4,6 @@ import { useMutation } from "@tanstack/react-query"
 import {
   ChatCircleIcon,
   PaperPlaneTiltIcon,
-  SpinnerGapIcon,
 } from "@phosphor-icons/react"
 import {
   Card,
@@ -16,6 +15,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import { Skeleton } from "~/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -218,9 +218,12 @@ function Ask() {
               ))}
               {mutation.isPending && (
                 <div className="flex justify-start">
-                  <div className="flex items-center gap-2 rounded-lg bg-muted px-4 py-3 text-muted-foreground">
-                    <SpinnerGapIcon className="size-4 animate-spin" />
-                    Thinking...
+                  <div className="max-w-[80%] rounded-lg bg-muted px-4 py-3">
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
                   </div>
                 </div>
               )}

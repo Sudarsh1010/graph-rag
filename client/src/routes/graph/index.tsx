@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { apiFetch } from "~/lib/api-client"
+import { Skeleton } from "~/components/ui/skeleton"
 
 const EXAMPLE_QUERIES = [
   {
@@ -140,6 +141,43 @@ function GraphView() {
         <Card className="border-destructive">
           <CardContent className="pt-6">
             <div className="text-sm text-destructive">{error}</div>
+          </CardContent>
+        </Card>
+      )}
+
+      {mutation.isPending && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Results</CardTitle>
+            <CardDescription>
+              <Skeleton className="h-4 w-24" />
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {[1, 2, 3, 4].map((i) => (
+                      <TableHead key={i}>
+                        <Skeleton className="h-4 w-20" />
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      {[1, 2, 3, 4].map((j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-4 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}

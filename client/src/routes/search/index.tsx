@@ -12,6 +12,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import { Skeleton } from "~/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -100,9 +101,32 @@ function Search() {
           </div>
 
           {isLoading && (
-            <div className="flex items-center justify-center py-8 text-muted-foreground">
-              Searching...
-            </div>
+            <>
+              {[1, 2].map((i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-20" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex gap-4">
+                        {[1, 2, 3, 4, 5, 6].map((j) => (
+                          <Skeleton key={j} className="h-4 flex-1" />
+                        ))}
+                      </div>
+                      {[1, 2, 3, 4, 5].map((row) => (
+                        <div key={row} className="flex gap-4">
+                          {[1, 2, 3, 4, 5, 6].map((cell) => (
+                            <Skeleton key={cell} className="h-4 flex-1" />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </>
           )}
 
           {resultGroups.map(([entityType, results]) => (
